@@ -1,50 +1,50 @@
-# Crea una aplicación de Video content moderation ⏯️ 🔫 🚬 en minutos usando [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer)
+# Create a Video Content Moderation application. ⏯️ 🔫 🚬 in using [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer)
 
-> Contenido original de mi blog: [All the things that Amazon Comprehend, Rekognition, Textract, Polly, Transcribe, and Others Do](https://community.aws/posts/all-the-things-that-comprehend-rekognition-textract-polly-transcribe-and-others-do)
+> The original content of my blog.: [All the things that Amazon Comprehend, Rekognition, Textract, Polly, Transcribe, and Others Do](https://community.aws/posts/all-the-things-that-comprehend-rekognition-textract-polly-transcribe-and-others-do)
 
-En este repo te voy a guiar en un pao a paso en como crear una aplicación de moderación de video con [AWS Cloud Development Kit (AWS CDK)](https://docs.aws.amazon.com/cdk/v2/guide/home.html) usando [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer). 
+In this repo, I will guide you step by step on how to create a video moderation application. [AWS Cloud Development Kit (AWS CDK)](https://docs.aws.amazon.com/cdk/v2/guide/home.html) using [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer). 
 
-Soy fan de las películas de acción y quería probar Rekognition con el tráiler de Die Hard 1, así que creé esta aplicación y ¡guau! cada dataframe es pura violencia 🫣... Te invito a crearla y probarla con un tráiler de tu película favorita.
+I am a fan of action movies and wanted to try Rekognition with the trailer of Die Hard 1, so I created this application, and wow! Each frame is pure violence 🫣... I invite you to create and test it with a trailer of your favorite movie.
 
 ![Video content moderation](imagenes/diagrama.png) 
 
 
-### ¿Qué es CodeWhisperer?
-Es un generador de código de uso general basado en el aprendizaje automático que le proporciona recomendaciones de código en tiempo real. A medida que escribe código, CodeWhisperer genera automáticamente sugerencias basadas en el código y los comentarios existentes. Sus recomendaciones personalizadas pueden variar en tamaño y alcance, desde un comentario de una sola línea hasta funciones completas.
+### What is CodeWhisperer?
+It is a general-purpose code generator based on machine learning that provides real-time code recommendations. As you write code, CodeWhisperer automatically generates suggestions based on existing code and comments. Its personalized recommendations can vary in size and scope, ranging from a single-line comment to complete functions.
 
-CodeWhisperer también puede escanear tu código para resaltar y definir los problemas de seguridad.
+CodeWhisperer can also scan your code to highlight and identify security issues.
 
-## ¿Como funciona esta aplicación?
+## How does this application work?
 
-1. Sube un video en formato .mp4 a un [Bucket de S3](https://docs.aws.amazon.com/es_es/AmazonS3/latest/userguide/UsingBucket.html).
-2. Una [Amazon Lambda Function](https://docs.aws.amazon.com/es_es/lambda/latest/dg/welcome.html) hace la llamada a la API de [Amazon Rekognition](https://aws.amazon.com/es/rekognition/).
-3. Una vez finalizada la revisión del vídeo, una nueva función de Lambda recupera el resultado y lo almacena en un bucket de Amazon S3.
+1. Upload a video in .mp4 format to a specific location. [Bucket de S3](https://docs.aws.amazon.com/es_es/AmazonS3/latest/userguide/UsingBucket.html).
+2. Une [Amazon Lambda Function](https://docs.aws.amazon.com/es_es/lambda/latest/dg/welcome.html) It makes the API call to [Amazon Rekognition](https://aws.amazon.com/es/rekognition/).
+3. After the video review is completed, a new Lambda function retrieves the result and stores it in an Amazon S3 bucket..
 
-## Instrucciones para crearla con [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer): 
+## Instructions to create it with [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer): 
 
-### Paso 1: configura [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer) en [VS Code](https://code.visualstudio.com/) para desarrolladores individuales:
+### Step 1: Set up [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer) en [VS Code](https://code.visualstudio.com/) For individual developers:
 
-Siguiendo los pasos en [Configuración de CodeWhisperer para desarrolladores individuales](https://docs.aws.amazon.com/codewhisperer/latest/userguide/whisper-setup-indv-devs.html) o ve el siguiente video: 
+Following the steps in [CodeWhisperer Setup for Individual Developers](https://docs.aws.amazon.com/codewhisperer/latest/userguide/whisper-setup-indv-devs.html) o ve el siguiente video: 
 
 [![Install Amazon CodeWhisperer and Build Applications Faster Today (How To)](imagenes/video_1.jpeg)](https://www.youtube.com/watch?v=sFh3_cMUrMk&t=1s)
 
-### Paso 2: Crear El Ambiente de [AWS Cloud Development Kit (AWS CDK)](https://docs.aws.amazon.com/cdk/v2/guide/home.html): 
+### Step 2: Create the Environment for [AWS Cloud Development Kit (AWS CDK)](https://docs.aws.amazon.com/cdk/v2/guide/home.html): 
 
-Siguendo los pasos de [Tu primeraAWS CDK aplicación](https://docs.aws.amazon.com/es_es/cdk/v2/guide/hello_world.html)
+Following the steps of [Your First AWS CDK Application](https://docs.aws.amazon.com/es_es/cdk/v2/guide/hello_world.html)
 
-- Crea la carpeta para la aplicación y luego ingresa a ella: 
+- Create the folder for the application and then navigate into it: 
 
 ```
 mkdir scanvideo-with-codewhisperer 
 cd scanvideo-with-codewhisperer 
 ```
 
-- Inicializa la aplicación en el lenguaje python: 
+- Initialize the application in the Python language:
 
 ```
 cdk init app --language python
 ```
-- Activa en ambiente virtual e instala las dependencias de AWS CDK principales. 
+- Activate the virtual environment and install the core AWS CDK dependencies.
 
 ```
 source .venv/bin/activate
@@ -53,32 +53,33 @@ python -m pip install -r requirements.txt
 
 ### Paso 3: Crear La Aplicación: 
 
-En este paso le vamos a pedir a [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer) que nos sugiera el código que dará vida a nuestra aplicación. 
+In this step, we will ask [AWS CodeWhisperer](https://aws.amazon.com/es/pm/codewhisperer) to suggest the code that will bring our application to life.
 
 ![Video content moderation](imagenes/diagrama.png) 
 
-Volviendo a la arquitectura, necesitamos crear lo siguiente: 
-1. Un bucket de Amazon S3, que se llamará `video-storage`. 
-2. Dos Lambdas Functions:
-    - lambda_invokes_Rekognition: Para invocar la API [start_content_moderation](https://boto3.amazonaws.com/v1/documentation/api/1.9.42/reference/services/rekognition.html#Rekognition.Client.start_content_moderation) de Amazon Rekognition.
-    - lambda_process_Rekognition: Para procesar el resultado de Amazon Rekognition. 
-3. Un Amazon SNS Topic para generar la notificación a `lambda_process_Rekognition` cuando se termine de procesar el video. 
+Returning to the architecture, we need to create the following:
 
-Para empezar a generar el codigo ve al `/scanvideo-with-codewhisperer/scanvideo_with_codewhisperer/scanvideo_with_codewhisperer_stack.py` creado en el ambiente del paso anterior. 
+1. An Amazon S3 bucket, named video-storage.
+2. Two Lambda Functions:
+    - lambda_invokes_Rekognition: To invoke the start_content_moderation API of Amazon Rekognition.
+    - lambda_process_Rekognition: To process the result from Amazon Rekognition.
+3. An Amazon SNS Topic to generate a notification to lambda_process_Rekognition when the video processing is complete.
 
-Escribe las siguientes instrucciones, una a una, una vez escribas la intruccion presiona `enter`, luego las teclas `option + c` y la fechas `derecha` e `izquierda` para seleccionar la sugerencia de código más adecuado. 
+To start generating the code, go to /scanvideo-with-codewhisperer/scanvideo_with_codewhisperer/scanvideo_with_codewhisperer_stack.py created in the environment from the previous step.
 
-En este video puedes ver un ejemplo: 
+Write the following instructions one by one. Once you write the instruction, press enter, then press option + c keys, and use the right and left arrow keys to select the most appropriate code suggestion.
+
+In this video, you can see an example:
 
 [![Who Did This? Track Code Recommendations With Amazon CodeWhisperer](imagenes/video_1.jpeg)](https://www.youtube.com/watch?v=qu67bvH2Y08)
 
-> 🚨 **Atención** Amazon CodeWhisperer te entrega sugerencias de código que no necesariamente esten 100% correctos, debes revisarlo y si es necesario modificarlo. 
+> 🚨 **Attention** : Amazon CodeWhisperer provides code suggestions that may not necessarily be 100% correct. You should review it and modify it if necessary.
 
-1 - Crear el Amazon s3 Bucket: 
+1 - Create the Amazon S3 Bucket:
 
 `#cdk code to amazon s3 bucket named "video-storage"`
 
-![crear amazon s3 bucket](imagenes/create-amazon-s3-bucket.gif)
+![create amazon s3 bucket](imagenes/create-amazon-s3-bucket.gif)
 
 ```python
 video_storage = s3.Bucket(self, "video-storage",
@@ -87,14 +88,14 @@ video_storage = s3.Bucket(self, "video-storage",
                                        auto_delete_objects=True)
 ```
 
-2 - Crear el Amazon SNS Topic: 
+2 - Create the Amazon SNS Topic:
 
 `#cdk code to sns topic named "scan-video-topic"`
 ```python
 scan_video_topic = sns.Topic(self, "scan-video-topic")
 ```
 
-3 - Crear el Amazon IAM Role para ejecutar Amazon Rekognition: 
+3 - Create the Amazon IAM Role to execute Amazon Rekognition:"
 
 `#cdk code to role to grant to assume amazon rekognition`
 
@@ -104,7 +105,7 @@ rekognition_role = iam.Role(self, "rekognition-role",
         
 ```
 
-4 - Crear agregar al Role anterior la politica que permite que Amazon Rekognition pueda publicar en el SNS Topic:
+4 - Add to the previous Role the policy that allows Amazon Rekognition to publish to the SNS Topic:
 
 `#cdk code to add a policy to the role to allow rekognition to publish sns`
 
@@ -115,7 +116,7 @@ rekognition_role.add_to_policy(iam.PolicyStatement(
         ))
 ```
 
-5 - Crear la Amazon Lambda Function encargada de invocar a rekogntion (crea la carpeta `/lambdas_code/lambda_invokes_rekognition` para que sumes el código en `lambda_function.py`)
+5 - Create the Amazon Lambda Function responsible for invoking Rekognition (create the folder /lambdas_code/lambda_invokes_rekognition to add the code in lambda_function.py)
 
 `#cdk code to create a lambda function to scan the video`
 ```python
@@ -132,7 +133,7 @@ scan_video_lambda = lambda_.Function(self, "lambda_invokes_Rekognition",
         )
 ```
 
-6 - Permisos requeridos para lambda_invokes_rekognition Lambda Function
+6 - Required permissions for lambda_invokes_rekognition Lambda Function:
 
 `#cdk code to add a permission to the lambda function to allow it to read from the video storage`
 
@@ -174,7 +175,7 @@ scan_video_lambda.add_to_role_policy(iam.PolicyStatement(
             ))
 ```
 
-7 - Crear la Amazon Lambda Function encargada de procesar el resultado de amazon rekogntion (el código de esta se crea aparte en `/lambdas_code/lambda_process_rekognition`)
+7 - Create the Amazon Lambda Function responsible for processing the result from Amazon Rekognition (the code for this is created separately in /lambdas_code/lambda_process_rekognition)
 
 `#cdk code to create a lambda function to process result of content moderation`
 
@@ -190,7 +191,7 @@ process_result_lambda = lambda_.Function(self, "lambda_process_rekognition",
                                                       )
 ```
 
-8 - Permisos requeridos para lambda_process_rekognition Lambda Function
+8 - Required permissions for lambda_process_rekognition Lambda Function:
 
 `#cdk code to add a permission to the lambda function to allow it write from the video storage`
 
@@ -213,7 +214,7 @@ process_result_lambda.add_to_role_policy(iam.PolicyStatement(
 scan_video_topic.add_subscription(subs.LambdaSubscription(process_result_lambda))
 ```
 
-9 - Asegura de importar todas las librerias necesarias. 
+9 - Make sure to import all the necessary libraries.
 
 ![Importar Librerias](imagenes/import_lib.gif)
 
@@ -231,12 +232,12 @@ from aws_cdk import (
   )
 ```
 
-Cuando finalices deberías ver algo como en [scanvideo_with_codewhisperer_stack.py](/scanvideo-with-codewhisperer/scanvideo_with_codewhisperer/scanvideo_with_codewhisperer_stack.py)
+When you finish, you should see something like in [scanvideo_with_codewhisperer_stack.py](/scanvideo-with-codewhisperer/scanvideo_with_codewhisperer/scanvideo_with_codewhisperer_stack.py)
 
 
-### Paso 4: Código de la Amazon Lambda Function `lambda_invokes_rekognition`: 
+### Step 4: Code for the Amazon Lambda Function `lambda_invokes_rekognition`: 
 
-La puedes crear con una sola linea de solicitud:
+You can create it with just one line of request:
 
 `#python code a lambda function to start rekognition video content moderation`
 
@@ -276,11 +277,11 @@ def lambda_handler(event, context):
     
 ```
 
-Aca puedes ver el código final: [lambda_invokes_rekognition/lambda_function.py](/scanvideo-with-codewhisperer/lambdas_code/lambda_invokes_rekognition/lambda_function.py)
+Here you can see the final code: [lambda_invokes_rekognition/lambda_function.py](/scanvideo-with-codewhisperer/lambdas_code/lambda_invokes_rekognition/lambda_function.py)
 
-### Paso 5: Código de la Amazon Lambda Function `lambda_process_rekognition`: 
+### Step 5: Code for the Amazon Lambda Function `lambda_process_rekognition`: 
 
-Esta Lambda Function hace mas cosas por separado por lo que pediremos sugerencias de forma estructurada: 
+This Lambda Function does more things separately, so we will request suggestions in a structured way: 
 
 `#create a function to get content moderation from jobid from rekognition`
 
@@ -332,32 +333,32 @@ def lambda_handler(event, context):
     return response
 ```
 
->👾 Recuerda sumar al código el bucket name --> `bucket_name = os.environ.get('BUCKET_NAME')`
+>👾 Remember to add the bucket name to the code.--> `bucket_name = os.environ.get('BUCKET_NAME')`
 
 
-Aca puedes ver el código final: [lambda_process_rekognition/lambda_function.py](/scanvideo-with-codewhisperer/lambdas_code/lambda_process_rekognition/lambda_function.py)
+Here you can see the final code:[lambda_process_rekognition/lambda_function.py](/scanvideo-with-codewhisperer/lambdas_code/lambda_process_rekognition/lambda_function.py)
 
-### Paso 6: Deploy y prueba!
+### Step 6: Deploy and test!
 
-Una vez generado el código, en el terminal ve nuevamente a la carpeta *scanvideo-with-codewhisperer*, y despliegua🚀 con: 
+Once the code is generated, in the terminal, go back to the scanvideo-with-codewhisperer folder, and deploy🚀 with: 
 
 ```
 cdk deploy
 ```
 
-🤖 Listo!! creaste aplicación de Moderacion de video 👨🏻⏯️ 🔫 🚬! 
+🤖 Ready!! You've created a Video Moderation application 👨🏻⏯️ 🔫 🚬!
 
-Te dejo un vide para que la pruebes rápidamente --> [Video](imagenes/moderation-video.mp4)
+I'll leave you a video for you to test it quickly --> [Video](imagenes/moderation-video.mp4)
 
-### Paso 7: Elimina la aplicación.
+### Step 7: Delete the application.
 
-Para eliminar todo lo creado anteriormente solo debes ingresar el siguiente comando: 
+To delete everything created earlier, just enter the following command:
 
 ```
 cdk destroy
 ```
 
-### 🚀 Sigue aprendiendo: 
+### 🚀 Keep learning:
 
 - [Mastering the art of CodeWhisperer 🪄](https://www.youtube.com/watch?v=sFh3_cMUrMk&list=PLDqi6CuDzubxzL-yIqgQb9UbbceYdKhpK)
 - [Get Started](https://aws.amazon.com/es/codewhisperer/resources/)
@@ -366,11 +367,11 @@ cdk destroy
 
 ----
 
-# 🚨¿Te gusto? 👩🏻‍💻 ¿Tienes comentarios?🎤 cuéntamelo todo --> [acá](https://www.pulse.aws/survey/LMJI72HJ)
+# 🚨Did you like it? 👩🏻‍💻 Any feedback? 🎤 Tell me everything! --> [acá](https://www.pulse.aws/survey/LMJI72HJ)
 
 ----
 
-## ¡Gracias!
+## Thank You !
 
 Te dejo mis redes: 
 🇻🇪🇨🇱 [Dev.to](https://dev.to/elizabethfuentes12) [Linkedin](https://www.linkedin.com/in/lizfue/) [GitHub](https://github.com/elizabethfuentes12/) [Twitter](https://twitter.com/elizabethfue12) [Instagram](https://www.instagram.com/elifue.tech) [Youtube](https://www.youtube.com/channel/UCr0Gnc-t30m4xyrvsQpNp2Q)
